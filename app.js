@@ -48,7 +48,7 @@ app.get("/api/v1/tours/:id", (req, res) => {
 
 app.post("/api/v1/tours", (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
-  newTour = Object.assign({ id: newId }, req.body);
+  const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
@@ -66,22 +66,19 @@ app.post("/api/v1/tours", (req, res) => {
 
 app.patch("/api/v1/tours/:id", (req, res) => {
   const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
 
-  const fail = () => {
+  if (!tour) {
     return res.status(404).json({
       status: "fail",
       data: {
         message: "Ivalid ID",
       },
     });
-  };
-  if (id > tours.length) return fail();
-
-  const tour = tours.find((el) => el.id === id);
-  if (!tour) return fail();
+  }
 
   const updatedTour = Object.assign(tour, req.body);
-  tours[id - 1] = updatedTour;
+  tours[id] = updatedTour;
 
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
@@ -92,6 +89,34 @@ app.patch("/api/v1/tours/:id", (req, res) => {
         data: {
           tour: updatedTour,
         },
+      });
+    }
+  );
+});
+
+app.delete("/api/v1/tours/:id", (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+
+  if (!tour) {
+    return res.status(404).json({
+      status: "fail",
+      data: {
+        message: "Ivalid ID",
+      },
+    });
+  }
+
+  tours.splice(id, 1);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      console.log(err);
+      res.status(204).json({
+        status: "success",
+        data: null,
       });
     }
   );
