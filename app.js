@@ -64,6 +64,39 @@ app.post("/api/v1/tours", (req, res) => {
   );
 });
 
+app.patch("/api/v1/tours/:id", (req, res) => {
+  const id = req.params.id * 1;
+
+  const fail = () => {
+    return res.status(404).json({
+      status: "fail",
+      data: {
+        message: "Ivalid ID",
+      },
+    });
+  };
+  if (id > tours.length) return fail();
+
+  const tour = tours.find((el) => el.id === id);
+  if (!tour) return fail();
+
+  const updatedTour = Object.assign(tour, req.body);
+  tours[id - 1] = updatedTour;
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(200).json({
+        status: "success",
+        data: {
+          tour: updatedTour,
+        },
+      });
+    }
+  );
+});
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Natours App is running on port ${port}`);
