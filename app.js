@@ -8,8 +8,13 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 
+// DATA
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/users.json`)
 );
 
 // ROUTE HANDLERS
@@ -120,6 +125,76 @@ const deleteTour = (req, res) => {
   );
 };
 
+const getAllUsers = (req, res) => {
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    dtat: {
+      users,
+    },
+  });
+};
+
+const getUser = (req, res) => {
+  const id = req.params.id;
+  const user = users.find((el) => el._id === id);
+
+  if (!user) {
+    return res.status(404).json({
+      status: "fail",
+      data: {
+        message: "Ivalid ID",
+      },
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
+};
+
+// const createUser = (req, res) => {
+//   const newId = users[users.length - 1].id + 1;
+//   const newUser = Object.assign({ _id: newId }, req.body);
+//   users.push(newUser);
+//   fs.writeFile(
+//     `${__dirname}/dev-data/data/users.json`,
+//     JSON.stringify(users),
+//     (err) => {
+//       res.status(201).json({
+//         status: "success",
+//         data: {
+//           user: newUser,
+//         },
+//       });
+//     }
+//   );
+// };
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "This route is not defined yet",
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "This route is not defined yet",
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "This route is not defined yet",
+  });
+};
+
 // ROUTES
 app.route("/api/v1/tours").get(getAllTours).post(createTour);
 app
@@ -128,7 +203,14 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
-  // START SERVER
+app.route("/api/v1/users").get(getAllUsers).post(createUser);
+app
+  .route("/api/v1/users/:id")
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
+
+// START SERVER
 const port = 3000;
 app.listen(port, () => {
   console.log(`Natours App is running on port ${port}`);
