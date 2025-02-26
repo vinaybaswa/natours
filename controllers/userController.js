@@ -1,7 +1,29 @@
 const fs = require("fs");
+
 const users = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
 );
+
+let id = null;
+let user = null;
+
+exports.checkUserId = (req, res, next, val) => {
+  console.log(`User id is: ${val}`);
+
+  id = val;
+  user = users.find((el) => el._id === id);
+
+  if (!user) {
+    return res.status(404).json({
+      status: "fail",
+      data: {
+        message: "Ivalid ID",
+      },
+    });
+  }
+
+  next();
+};
 
 exports.getAllUsers = (req, res) => {
   res.status(200).json({
@@ -14,18 +36,6 @@ exports.getAllUsers = (req, res) => {
 };
 
 exports.getUser = (req, res) => {
-  const id = req.params.id;
-  const user = users.find((el) => el._id === id);
-
-  if (!user) {
-    return res.status(404).json({
-      status: "fail",
-      data: {
-        message: "Ivalid ID",
-      },
-    });
-  }
-
   res.status(200).json({
     status: "success",
     data: {
