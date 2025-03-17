@@ -29,6 +29,7 @@ mongoose
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/tours-simple.json`, "utf-8"),
 );
+console.log(tours);
 
 // IMPORT DATA INTO DB
 const importData = async () => {
@@ -36,6 +37,7 @@ const importData = async () => {
     await Tour.create(tours);
     // eslint-disable-next-line no-console
     console.log("Data successfully loaded!");
+    console.log(tours[0]);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);
