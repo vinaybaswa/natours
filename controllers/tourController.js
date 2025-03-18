@@ -10,10 +10,18 @@ exports.getAllTours = async (req, res) => {
     // 2) Advanced Filtering
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    queryStr = JSON.parse(queryStr);
-    console.log(queryStr);
 
-    const tours = await Tour.find(queryStr);
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // 3) Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    const tours = await query;
 
     res.status(200).json({
       status: "success",
